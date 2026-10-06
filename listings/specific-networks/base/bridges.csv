@@ -2,6 +2,7 @@ slug,provider,offer,actionButtons,chain,technology,txSpeedSla,throughputSla,open
 across-mainnet,,!offer:across,,mainnet,,,,,,,,,,,,,,,,,,
 across-testnet,,!offer:across,,testnet,,,,,,,,,,,,,,,,,,
 allbridge-core-mainnet,,!offer:allbridge-core,,mainnet,,,,,,,,,,,,,,,,,,
+aramid-mainnet,,!offer:aramid-bridge,,mainnet,,,,,,,,,,,,,,,,,,
 asterizm-mainnet,,!offer:asterizm,,mainnet,,,,,,,,,,,,,,,,,,
 axelar-mainnet,,!offer:axelar,,mainnet,,,,,,,,,,,,,,,,,,
 celer-mainnet,,!offer:celer,,mainnet,,,,,,,,,,,,,,,,,,
