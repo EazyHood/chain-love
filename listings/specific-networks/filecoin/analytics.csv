@@ -1,4 +1,9 @@
 slug,provider,offer,actionButtons,chain,dataSources,hasDashboard,historicalData,availableApis,price,planName,planType,starred,tag
+coincap-api-builder,,!offer:coincap-api-builder,"[""[Dashboard](https://coincap.io/assets/filecoin)"",""[Buy](https://splash.coincap.io/pricing)""]",mainnet,,,,,,,,,
+coincap-api-enterprise,,!offer:coincap-api-enterprise,"[""[Dashboard](https://coincap.io/assets/filecoin)"",""[Buy](https://splash.coincap.io/pricing)""]",mainnet,,,,,,,,,
+coincap-api-free,,!offer:coincap-api-free,"[""[Dashboard](https://coincap.io/assets/filecoin)"",""[Sign Up](https://pro.coincap.io/signup)""]",mainnet,,,,,,,,,
+coincap-api-growth,,!offer:coincap-api-growth,"[""[Dashboard](https://coincap.io/assets/filecoin)"",""[Buy](https://splash.coincap.io/pricing)""]",mainnet,,,,,,,,,
+coincap-api-professional,,!offer:coincap-api-professional,"[""[Dashboard](https://coincap.io/assets/filecoin)"",""[Buy](https://splash.coincap.io/pricing)""]",mainnet,,,,,,,,,
 coingecko-api-analyst,,!offer:coingecko-api-analyst,"[""[Dashboard](https://www.coingecko.com/en/coins/filecoin)"",""[Buy](https://www.coingecko.com/en/api/pricing)""]",mainnet,,,,,,,,,
 coingecko-api-basic,,!offer:coingecko-api-basic,"[""[Dashboard](https://www.coingecko.com/en/coins/filecoin)"",""[Buy](https://www.coingecko.com/en/api/pricing)""]",mainnet,,,,,,,,,
 coingecko-api-lite,,!offer:coingecko-api-lite,"[""[Dashboard](https://www.coingecko.com/en/coins/filecoin)"",""[Buy](https://www.coingecko.com/en/api/pricing)""]",mainnet,,,,,,,,,

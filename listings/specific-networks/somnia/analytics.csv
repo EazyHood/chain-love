@@ -1,5 +1,10 @@
 slug,provider,offer,actionButtons,chain,dataSources,hasDashboard,historicalData,availableApis,price,planName,planType,starred,tag
 chainspect-mainnet,,!offer:chainspect,"[""[Dashboard](https://chainspect.app/chain/somnia)""]",mainnet,"[""Real-time TPS"",""Max TPS"",""Transaction Volume"",""Block Time"",""Finality"",""Total Transactions"",""Nakamoto Coefficient"",""Validators"",""Financial Metrics""]",,,,,,,,
+coincap-api-builder,,!offer:coincap-api-builder,"[""[Dashboard](https://coincap.io/assets/somnia)"",""[Buy](https://splash.coincap.io/pricing)""]",mainnet,,,,,,,,,
+coincap-api-enterprise,,!offer:coincap-api-enterprise,"[""[Dashboard](https://coincap.io/assets/somnia)"",""[Buy](https://splash.coincap.io/pricing)""]",mainnet,,,,,,,,,
+coincap-api-free,,!offer:coincap-api-free,"[""[Dashboard](https://coincap.io/assets/somnia)"",""[Sign Up](https://pro.coincap.io/signup)""]",mainnet,,,,,,,,,
+coincap-api-growth,,!offer:coincap-api-growth,"[""[Dashboard](https://coincap.io/assets/somnia)"",""[Buy](https://splash.coincap.io/pricing)""]",mainnet,,,,,,,,,
+coincap-api-professional,,!offer:coincap-api-professional,"[""[Dashboard](https://coincap.io/assets/somnia)"",""[Buy](https://splash.coincap.io/pricing)""]",mainnet,,,,,,,,,
 coingecko-api-analyst,,!offer:coingecko-api-analyst,,mainnet,,,,,,,,,
 coingecko-api-basic,,!offer:coingecko-api-basic,,mainnet,,,,,,,,,
 coingecko-api-lite,,!offer:coingecko-api-lite,,mainnet,,,,,,,,,
