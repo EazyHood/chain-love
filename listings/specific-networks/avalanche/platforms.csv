@@ -1,5 +1,8 @@
 slug,provider,offer,actionButtons,toolType,description,tag,planType,planName,price,trial,availableApis,executionEnvironment
 apeworx,,!offer:apeworx,,,,,,,,,,
+ash-managed-l1s-enterprise,,!offer:ash-managed-l1s-enterprise,,,,,,,,,,
+ash-managed-l1s-mainnet,,!offer:ash-managed-l1s-mainnet,,,,,,,,,,
+ash-managed-l1s-testnet,,!offer:ash-managed-l1s-testnet,,,,,,,,,,
 dynamic-growth,,!offer:dynamic-growth,,,,,,,,,,
 dynamic-launch,,!offer:dynamic-launch,,,,,,,,,,
 enso,,!offer:enso,,,,,,,,,,
