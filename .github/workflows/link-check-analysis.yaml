@@ -60,7 +60,7 @@ jobs:
           for f, lines in files.items():
               if lines:
                   Path(f).parent.mkdir(parents=True, exist_ok=True)
-                  content = ([headers[f]] if f in headers else []) + lines
+                  content = ([headers[f]] if f in headers else []) + [l for l in lines if l != headers.get(f)]
                   Path(f).write_text("\n".join(content) + "\n")
           PY
       
