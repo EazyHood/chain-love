@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Iterator, Callable, List, Dict
 import os
 import csv
+import json
 import re
 
 URL_PATTERN = re.compile(r'https?://', re.IGNORECASE)
@@ -78,6 +79,30 @@ def rule_links_must_be_quoted(path: Path, rows: List[Dict[str, str]]) -> List[st
 
     return errors
 
+MAX_ACTION_BUTTONS = 2  # wiki Common-Columns, actionButtons: "Max 2 buttons."
+
+def rule_action_buttons_max_two(path: Path, rows: List[Dict[str, str]]) -> List[str]:
+    if not rows or "actionButtons" not in rows[0]:
+        return []
+
+    errors: List[str] = []
+
+    for idx, row in enumerate(rows, start=2):  # header = row 1
+        raw = (row.get("actionButtons") or "").strip()
+        if not raw.startswith("["):
+            continue
+        try:
+            buttons = json.loads(raw)
+        except ValueError:
+            continue  # malformed cells are reported later by csv_to_json.py / validate.py
+        if isinstance(buttons, list) and len(buttons) > MAX_ACTION_BUTTONS:
+            errors.append(
+                f"{path}: row {idx}: '{row.get('slug', '')}': actionButtons has {len(buttons)} buttons, "
+                f"Common-Columns allows at most {MAX_ACTION_BUTTONS}"
+            )
+
+    return errors
+
 def iter_csv_files(root: Path) -> Iterator[Path]:
     for dirpath, _, filenames in os.walk(root):
         for name in sorted(filenames):
@@ -89,6 +114,7 @@ def main():
 
     validator = CSVValidator()
     validator.add_rule(rule_slug_sorted)
+    validator.add_rule(rule_action_buttons_max_two)
     #validator.add_rule(rule_links_must_be_quoted)
 
     all_errors: List[str] = []
