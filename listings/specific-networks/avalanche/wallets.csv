@@ -1,5 +1,5 @@
 slug,provider,offer,actionButtons,openSource,supportedPlatforms,custodial,mfa,msig,hardware,keyExport,native,evm,tendermint,tokensSupport,staking,price,support,audit,languages,starred,tag
-1inch,,!offer:1inch,,,,,,,,,,,,,,,,,,,
+1inch,,!offer:1inch,,,,,,,,,,,,"[""ERC-20""]",,,,,,,
 alphawallet,,!offer:alphawallet,,,,,,,,,,,,,,,,,,,
 ambire-wallet,,!offer:ambire-wallet,,,,,,,,,,,,,,,,,,,
 atomic-wallet,,!offer:atomic-wallet,,,,,,,,,,,,,,,,,,,
@@ -54,9 +54,9 @@ tangem,,!offer:tangem,"[""[Website](https://tangem.com/en/cryptocurrencies/avala
 tokenpocket,,!offer:tokenpocket,,,,,,,,,,,,,,,,,,,
 trezor,,!offer:trezor,"[""[Website](https://trezor.io/coins/wallet/avalanche-2)""]",,,,,,,,,,,,,,,,,,
 trustwallet,,!offer:trustwallet,,,,,,,,,,,,,,,,,,,
-unstoppable,,!offer:unstoppable,,,,,,,,,,,,,,,,,,,
+unstoppable,,!offer:unstoppable,,,,,,,,,,,,"[""ERC-20""]",,,,,,,
 walletverse,,!offer:walletverse,,,,,,,,,,,,,,,,,,,
-wigwam,,!offer:wigwam,,,,,,,,,,,,,,,,,,,
+wigwam,,!offer:wigwam,,,,,,,,,,,,"[""ERC-20""]",,,,,,,
 zengo,,!offer:zengo,,,,,,,,,,,,,,,,,,,
 zengo-pro,,!offer:zengo-pro,,,,,,,,,,,,,,,,,,,
 zerion,,!offer:zerion,,,,,,,,,,,,,,,,,,,
