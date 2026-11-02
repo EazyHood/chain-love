@@ -3,6 +3,7 @@ slug,provider,offer,actionButtons,toolType,tag,price,planType,planName,descripti
 akave-cloud-business,,!offer:akave-cloud-business,,,,,,,,
 akave-cloud-plus,,!offer:akave-cloud-plus,,,,,,,,
 akave-cloud-standard,,!offer:akave-cloud-standard,,,,,,,,
+akave-managed-storage,,!offer:akave-managed-storage,,,,,,,,
 aleph-cloud-enterprise,,!offer:aleph-cloud-enterprise,,,,,,,,
 arweave,,!offer:arweave,,,,,,,,
 bluzelle,,!offer:bluzelle,,,,,,,,
