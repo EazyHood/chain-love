@@ -78,6 +78,54 @@ def rule_links_must_be_quoted(path: Path, rows: List[Dict[str, str]]) -> List[st
 
     return errors
 
+PROVIDER_URL_COLUMNS = ("website", "docs")
+PROVIDER_PLATFORM_EXAMPLES = {
+    "x": "1inch",
+    "github": "Chain-Love/chain-love",
+    "discord": "invite/1inch",
+    "telegram": "OneInchNetworkNews",
+    "linkedin": "company/1inchcom",
+}
+PLATFORM_DOMAINS = (
+    "x.com", "twitter.com", "github.com", "discord.gg", "discord.com",
+    "discordapp.com", "t.me", "telegram.me", "linkedin.com",
+)
+FULL_URL_PATTERN = re.compile(r'https?://\S+$', re.IGNORECASE)
+
+def platform_link_problem(value: str) -> str:
+    if "://" in value:
+        return "must not include a URL scheme"
+    host = value.split("/", 1)[0].lower()
+    if any(host == d or host.endswith("." + d) for d in PLATFORM_DOMAINS):
+        return "must not include the platform domain"
+    return ""
+
+def rule_provider_link_format(path: Path, rows: List[Dict[str, str]]) -> List[str]:
+    # Link convention for references/providers/providers.csv (AGENTS.md, CONTRIBUTING.md, wiki Style-Guide).
+    if path.as_posix() != "references/providers/providers.csv":
+        return []
+
+    errors: List[str] = []
+
+    for idx, row in enumerate(rows, start=2):  # header = row 1
+        for column in PROVIDER_URL_COLUMNS + tuple(PROVIDER_PLATFORM_EXAMPLES):
+            value = (row.get(column) or "").strip()
+            if not value:
+                continue
+            if "](" in value:
+                problem = "must be a plain value, not a Markdown link"
+            elif column in PROVIDER_URL_COLUMNS:
+                problem = "" if FULL_URL_PATTERN.match(value) else "must be a full URL starting with http:// or https://"
+            else:
+                problem = platform_link_problem(value)
+            if problem:
+                errors.append(
+                    f"{path}: row {idx}: column '{column}': '{value}' {problem}"
+                    + ("" if column in PROVIDER_URL_COLUMNS else f" (store only the part after the domain, e.g. '{PROVIDER_PLATFORM_EXAMPLES[column]}')")
+                )
+
+    return errors
+
 def iter_csv_files(root: Path) -> Iterator[Path]:
     for dirpath, _, filenames in os.walk(root):
         for name in sorted(filenames):
@@ -89,6 +137,7 @@ def main():
 
     validator = CSVValidator()
     validator.add_rule(rule_slug_sorted)
+    validator.add_rule(rule_provider_link_format)
     #validator.add_rule(rule_links_must_be_quoted)
 
     all_errors: List[str] = []
