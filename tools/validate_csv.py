@@ -1,10 +1,15 @@
+from functools import lru_cache
 from pathlib import Path
-from typing import Iterator, Callable, List, Dict
+from typing import Iterator, Callable, List, Dict, FrozenSet
 import os
 import csv
+import json
 import re
 
 URL_PATTERN = re.compile(r'https?://', re.IGNORECASE)
+
+SCHEMA_PATH = Path(__file__).resolve().parent / "schema.json"
+BOOLEAN_VALUES = ("TRUE", "FALSE")
 
 Rule = Callable[[Path, List[Dict[str, str]]], List[str]]
 
@@ -50,6 +55,48 @@ def rule_slug_sorted(path: Path, rows: List[Dict[str, str]]) -> List[str]:
 
     return errors
 
+@lru_cache(maxsize=None)
+def boolean_columns_by_file(schema_path: Path = SCHEMA_PATH) -> Dict[str, FrozenSet[str]]:
+    """
+    Maps a CSV file name (without .csv) to its boolean columns, read from schema.json.
+    Category files share their name with a $defs entry; providers.csv rows become meta.providers.
+    """
+    with schema_path.open(encoding="utf-8") as f:
+        defs = json.load(f)["$defs"]
+
+    columns: Dict[str, FrozenSet[str]] = {}
+    for name, definition in defs.items():
+        boolean = set()
+        for column, spec in definition.get("properties", {}).items():
+            types = spec.get("type")
+            if not isinstance(types, list):
+                types = [types]
+            if "boolean" in types:
+                boolean.add(column)
+        columns[name] = frozenset(boolean)
+
+    columns["providers"] = columns.get("providerMeta", frozenset())
+    return columns
+
+def rule_boolean_values(path: Path, rows: List[Dict[str, str]]) -> List[str]:
+    columns = boolean_columns_by_file().get(path.stem)
+    if not columns:
+        return []
+
+    errors: List[str] = []
+
+    for idx, row in enumerate(rows, start=2):  # header = row 1
+        for column in sorted(columns):
+            value = row.get(column)
+            if value is None or value == "":
+                continue  # blank: not set, or inherited from the canonical offer
+            if value not in BOOLEAN_VALUES:
+                errors.append(
+                    f"{path}: row {idx}: column '{column}': boolean value must be TRUE or FALSE (uppercase), got '{value}'"
+                )
+
+    return errors
+
 def looks_like_url(v: str) -> bool:
     return v.startswith("http://") or v.startswith("https://")
 
@@ -89,6 +136,7 @@ def main():
 
     validator = CSVValidator()
     validator.add_rule(rule_slug_sorted)
+    validator.add_rule(rule_boolean_values)
     #validator.add_rule(rule_links_must_be_quoted)
 
     all_errors: List[str] = []
