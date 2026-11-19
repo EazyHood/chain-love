@@ -1,0 +1,101 @@
+name: Compare validator performance (PR 5443)
+on:
+  push:
+    branches: [benchmark/validator-5443-actions]
+permissions:
+  contents: read
+env:
+  DATA_COMMIT: 77720999f4efe06d6d72044520a656580f45a14c
+  BASE: 4190b058a6ae00e610bdd03108e0def29e9d3159
+  CANDIDATE: d1371baa0c45258c1e40b17d98ea0bc6d304482c
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      image: ${{ steps.inputs.outputs.image }}
+      corpus_sha: ${{ steps.inputs.outputs.corpus_sha }}
+    steps:
+      - name: Generate the fixed corpus and resolve the Python image
+        id: inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          scratch="$RUNNER_TEMP/chain-love-data"
+          mkdir "$scratch"
+          cd "$scratch"
+          git init -q
+          git remote add origin https://github.com/Chain-Love/chain-love.git
+          git fetch -q --depth=1 origin "$DATA_COMMIT" "$BASE" "$CANDIDATE"
+          git checkout -q --detach "$DATA_COMMIT"
+          git restore --source="$BASE" -- meta tools/wheels tools/requirements.txt
+          git show "$BASE:tools/csv_to_json.py" > csv_to_json.py
+          git show "$BASE:tools/schema.json" > schema.json
+          git show "$BASE:tools/validate.py" > before.py
+          git show "$CANDIDATE:tools/validate.py" > after.py
+          docker pull python:3.12-slim
+          image=$(docker image inspect --format '{{index .RepoDigests 0}}' python:3.12-slim)
+          docker run --rm --network none -e PYTHONHASHSEED=0 -v "$scratch:/data" -w /data "$image" python -B -X utf8 csv_to_json.py
+          test "$(find json -type f -name '*.json' | wc -l)" -eq 138
+          tar -czf "$RUNNER_TEMP/corpus.tar.gz" json references/offers meta schema.json csv_to_json.py before.py after.py tools/wheels tools/requirements.txt LICENSE.md
+          echo "image=$image" >> "$GITHUB_OUTPUT"
+          echo "corpus_sha=$(sha256sum "$RUNNER_TEMP/corpus.tar.gz" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fixed-corpus
+          path: ${{ runner.temp }}/corpus.tar.gz
+          compression-level: 0
+          retention-days: 7
+  benchmark:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        replica: [1, 2, 3]
+    env:
+      IMAGE: ${{ needs.prepare.outputs.image }}
+      CORPUS_SHA: ${{ needs.prepare.outputs.corpus_sha }}
+      REPLICA: ${{ matrix.replica }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: fixed-corpus
+          path: ${{ runner.temp }}
+      - name: Time both validators and check their diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          echo "$CORPUS_SHA  corpus.tar.gz" | sha256sum --check
+          mkdir inputs results
+          tar -xzf corpus.tar.gz -C inputs
+          docker pull "$IMAGE"
+          docker run --rm --network none -e PYTHONHASHSEED=0 -e REPLICA -e IMAGE -e CORPUS_SHA -e BASE -e CANDIDATE -e DATA_COMMIT \
+            -v "$GITHUB_WORKSPACE:/bench:ro" -v "$RUNNER_TEMP/inputs:/data:ro" -v "$RUNNER_TEMP/results:/results" -w /data "$IMAGE" \
+            sh -ec 'python -m pip install -q --no-index --find-links=tools/wheels -r tools/requirements.txt && python -u -B /bench/benchmark_validator.py'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runner-${{ matrix.replica }}
+          path: ${{ runner.temp }}/results/runner-*.json
+          if-no-files-found: error
+          retention-days: 90
+  summary:
+    needs: benchmark
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: runner-*
+          path: reports
+          merge-multiple: true
+      - name: Publish medians and verification results
+        run: python3 summarize_benchmark.py reports
